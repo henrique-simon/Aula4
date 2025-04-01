@@ -1,0 +1,147 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class Venda {
+    private int quantidade;
+    private double precoUnitario;
+    private double desconto;
+    private double valorTotal;
+    private double valorComDesconto;
+    private int dia;
+    private int mes;
+
+    public Venda(int quantidade, double precoUnitario, int dia, int mes) {
+        this.quantidade = quantidade;
+        this.precoUnitario = precoUnitario;
+        this.dia = dia;
+        this.mes = mes;
+        this.valorTotal = calcularValorTotal();
+        this.valorComDesconto = calcularValorComDesconto();
+    }
+
+    private double calcularValorTotal() {
+        return this.quantidade * this.precoUnitario;
+    }
+
+    private double calcularValorComDesconto() {
+        if (this.quantidade > 10) {
+            this.desconto = 0.05 * this.valorTotal; // 5% de desconto
+        }
+        return this.valorTotal - this.desconto;
+    }
+
+    public int getDia() {
+        return dia;
+    }
+
+    public int getMes() {
+        return mes;
+    }
+
+    public int getQuantidade() {
+        return quantidade;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Venda: %d plantas, Valor Total: R$%.2f, Desconto: R$%.2f, Valor com Desconto: R$%.2f",
+                this.quantidade, this.valorTotal, this.desconto, this.valorComDesconto);
+    }
+}
+
+class SistemaVendas {
+    private List<Venda> vendas;
+
+    public SistemaVendas() {
+        vendas = new ArrayList<>();
+    }
+
+    public Venda registrarVenda(int quantidade, double precoUnitario, int dia, int mes) {
+        Venda venda = new Venda(quantidade, precoUnitario, dia, mes);
+        vendas.add(venda);
+        return venda;
+    }
+
+    public void exibirVendas() {
+        if (vendas.isEmpty()) {
+            System.out.println("Nenhuma venda registrada.");
+        } else {
+            for (Venda venda : vendas) {
+                System.out.println(venda);
+            }
+        }
+    }
+
+    public int totalVendasPorDia(int dia) {
+        int total = 0;
+        for (Venda venda : vendas) {
+            if (venda.getDia() == dia) {
+                total += venda.getQuantidade();
+            }
+        }
+        return total;
+    }
+
+    public int totalVendasPorMes(int mes) {
+        int total = 0;
+        for (Venda venda : vendas) {
+            if (venda.getMes() == mes) {
+                total += venda.getQuantidade();
+            }
+        }
+        return total;
+    }
+
+    public void menu() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("\nMenu:");
+            System.out.println("1. Registrar venda");
+            System.out.println("2. Exibir vendas registradas");
+            System.out.println("3. Consultar vendas por dia");
+            System.out.println("4. Consultar vendas por mês");
+            System.out.println("5. Sair");
+            System.out.print("Escolha uma opção: ");
+            String opcao = scanner.nextLine();
+
+            if (opcao.equals("1")) {
+                System.out.print("Informe a quantidade de plantas: ");
+                int quantidade = Integer.parseInt(scanner.nextLine());
+                System.out.print("Informe o preço da planta: ");
+                double precoUnitario = Double.parseDouble(scanner.nextLine());
+                System.out.print("Informe o dia da venda (1-31): ");
+                int dia = Integer.parseInt(scanner.nextLine());
+                System.out.print("Informe o mês da venda (1-12): ");
+                int mes = Integer.parseInt(scanner.nextLine());
+                Venda venda = registrarVenda(quantidade, precoUnitario, dia, mes);
+                System.out.println("Venda registrada: " + venda);
+            } else if (opcao.equals("2")) {
+                exibirVendas();
+            } else if (opcao.equals("3")) {
+                System.out.print("Informe o dia para consultar as vendas: ");
+                int dia = Integer.parseInt(scanner.nextLine());
+                int total = totalVendasPorDia(dia);
+                System.out.println("Total de vendas no dia " + dia + ": " + total);
+            } else if (opcao.equals("4")) {
+                System.out.print("Informe o mês para consultar as vendas: ");
+                int mes = Integer.parseInt(scanner.nextLine());
+                int total = totalVendasPorMes(mes);
+                System.out.println("Total de vendas no mês " + mes + ": " + total);
+            } else if (opcao.equals("5")) {
+                System.out.println("Saindo...");
+                break;
+            } else {
+                System.out.println("Opção inválida. Tente novamente.");
+            }
+        }
+        scanner.close();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        SistemaVendas sistema = new SistemaVendas();
+        sistema.menu();
+    }
+}
